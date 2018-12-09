@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>制作时钟效果</title>
+</head>
+<body>
+<canvas id="clock" ></canvas>
+</body>
+<script>
+    var cvs=document.getElementById("clock");
+    cvs.width=300;
+    cvs.height=300;
+    cvs.style.background="#204459";
+    var ctx=cvs.getContext("2d");
+    ctx.fillStyle="#f9fefe";
+    ctx.strokeStyle="#090909";
+    ctx.translate(150,150);
+    var drawNumber=function (count) {
+        ctx.save();
+        ctx.beginPath();
+        a=Math.PI*2/12;
+        for(var i=1; i<=count;i++){
+            b=a*i-Math.PI/2;
+            x=110*Math.cos(b);
+            y=110*Math.sin(b);
+            ctx.moveTo(x,y);
+            ctx.fillText(i,x,y);
+        }
+        ctx.restore();
+    };
+    drawNumber(12);
+    var drawMark=function(count){
+        ctx.save();
+        ctx.beginPath();
+        for(var i=1; i<=count;i++){
+            ctx.rotate(2*Math.PI/count);
+            ctx.moveTo(100,0);
+            ctx.lineTo(90,0);
+        }
+        ctx.stroke();
+        ctx.restore();
+    }
+    drawMark(60);
+    var drawMark1=function(count){
+        ctx.save();
+        ctx.beginPath();
+        for(var i=1; i<=count;i++){
+            ctx.rotate(2*Math.PI/count);
+            ctx.moveTo(100,0);
+            ctx.lineTo(90,0);
+            ctx.lineWidth=3;
+        }
+        ctx.stroke();
+        ctx.restore();
+    }
+    drawMark1(12);
+    var wiseType={
+        h:[-15,50,"#fdfdfd",3],
+        m:[-20,60,"#f9fefe",2],
+        s:[-30,70,"#ff0000",1]
+    };
+    //type=wiseType.h
+    var drawWise=function (type,angle) {
+        var pos=type[0],r=type[1];
+        ctx.strokeStyle=type[2];
+        ctx.lineWidth=type[3];
+        angle=angle*Math.PI*2-Math.PI/2;
+        ctx.beginPath();
+        ctx.moveTo(pos*Math.cos(angle),pos*Math.sin(angle));
+        ctx.lineTo(r*Math.cos(angle),r*Math.sin(angle));
+        ctx.stroke();
+    };
+    drawWise(wiseType.h,3/12);
+    drawWise(wiseType.s,14/60);
+    drawWise(wiseType.m,40/60);
+    var getWiseAngle=function(){
+        var time=new Date();
+        var h=time.getHours(),
+            m=time.getMinutes(),
+            s=time.getSeconds();
+        //时间占比
+        var hangle=(h+m/60)/12,
+            mangle=(m+s/60)/60,
+            sangle=s/60;
+        return [hangle,mangle,sangle];
+    }
+    //主程序
+    ;(function() {
+        drawNumber(12);
+        drawMark(12);
+        drawMark(60);
+        var timer = null;
+        var ta;
+        timer = setInterval(function () {
+            ctx.clearRect(-70, -70, 140, 140);
+            ta = getWiseAngle();
+            drawWise(wiseType.h, ta[0]);
+            drawWise(wiseType.m, ta[1]);
+            drawWise(wiseType.s, ta[2]);
+        }, 500);
+    })()
+</script>
+</html>
